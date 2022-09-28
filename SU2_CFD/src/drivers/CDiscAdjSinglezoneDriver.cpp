@@ -344,6 +344,17 @@ void CDiscAdjSinglezoneDriver::SetAdj_ObjFunction(){
   }
 }
 
+//pad adding getweight-objfunction to the solver. 
+su2double CDiscAdjSinglezoneDriver::GetWeight_ObjFunc(unsigned short val_obj) {
+    return config->GetWeight_ObjFunc(val_obj);
+}
+
+void CDiscAdjSinglezoneDriver::SetWeight_ObjFunc(unsigned short val_obj, su2double val) {
+    config->SetWeight_ObjFunc(val_obj, val);
+}
+
+
+
 void CDiscAdjSinglezoneDriver::SetObjFunction(){
 
   ObjFunc = 0.0;

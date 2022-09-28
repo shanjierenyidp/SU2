@@ -126,6 +126,12 @@ protected:
    */
   void SetReferenceValues(const CConfig& config) final;
 
+//pad add diffinput and imeshstore in the eular solver 
+  vector<su2double> Diff_Inputs_Vars; /*!< \brief Differentiation input variables to be registered with AD. */
+  unsigned short iMesh_Store;
+
+
+
 public:
   CIncEulerSolver() = delete;
 
@@ -423,4 +429,13 @@ public:
    * \param[in] config - The particular config.
    */
   void ExtractAdjoint_SolutionExtra(su2activevector& adj_sol, const CConfig* config) final;
+
+  //pad add register and extract inside the eular solver.  
+  void RegisterVariables(CGeometry *geometry, CConfig *config, bool reset);
+
+  void ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config);
+
+
+
+
 };

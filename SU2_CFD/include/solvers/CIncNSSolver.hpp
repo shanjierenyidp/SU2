@@ -176,4 +176,13 @@ public:
                                   CConfig *config,
                                   unsigned short val_marker) override;
 
+
+  //pad add register and extract inside the eular solver.  
+  void RegisterVariables(CGeometry *geometry, CConfig *config, bool reset);
+
+  void ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config);
+
+
+
+
 };

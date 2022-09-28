@@ -251,4 +251,12 @@ public:
   inline su2double GetBuffetSensor(unsigned short val_marker, unsigned long val_vertex) const override {
     return Buffet_Sensor[val_marker][val_vertex];
   }
+  //pad add register and extract inside the eular solver.  
+  void RegisterVariables(CGeometry *geometry, CConfig *config, bool reset);
+
+  void ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config);
+
+
+
+
 };

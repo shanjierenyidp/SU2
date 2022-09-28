@@ -85,6 +85,11 @@ CDiscAdjSolver::CDiscAdjSolver(CGeometry *geometry, CConfig *config, CSolver *di
   nodes = new CDiscAdjVariable(Solution.data(), nPoint, nDim, nVar, config);
   SetBaseClassPointerToNodes();
 
+  // pad
+  /*--- Initialize arrays for flexible differentiation. ---*/
+
+  Total_Sens_Diff_Inputs = direct_solver->GetTotal_Sens_Diff_Inputs();
+
   /*--- Allocate extra solution variables, if any are in use. ---*/
 
   const auto nVarExtra = direct_solver->RegisterSolutionExtra(true, config);
@@ -294,6 +299,9 @@ void CDiscAdjSolver::RegisterVariables(CGeometry *geometry, CConfig *config, boo
    * and thereby also the objective function. The adjoint values (i.e. the derivatives) can be
    * extracted in the ExtractAdjointVariables routine. ---*/
 
+  // pad registering other variables 
+  direct_solver->RegisterVariables(geometry, config, reset);
+
   }
   END_SU2_OMP_SAFE_GLOBAL_ACCESS
 }
@@ -442,6 +450,27 @@ void CDiscAdjSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *conf
   }
 
   /*--- Extract here the adjoint values of everything else that is registered as input in RegisterInput. ---*/
+
+  direct_solver->ExtractAdjoint_Variables(geometry, config);
+  Total_Sens_Diff_Inputs = direct_solver->GetTotal_Sens_Diff_Inputs();
+
+  /*--- Copy variables that are dealt with here (adjoint solver) instead of direct solver to Diff Inputs ---*/
+  unsigned short iDiff_Inputs;
+  for (iDiff_Inputs = 0; iDiff_Inputs < config->GetnDiff_Inputs(); iDiff_Inputs++) {
+    switch (config->GetDiff_Inputs()[iDiff_Inputs]) {
+      // TODO Add check for cases like above. E.g., when incompressible Total_Sens_Mach is undefined
+      case DI_MACH:
+        Total_Sens_Diff_Inputs[iDiff_Inputs] = SU2_TYPE::GetValue(Total_Sens_Mach);
+        break;
+      case DI_AOA:
+        // XXX Adjust for radians-degrees here?
+        Total_Sens_Diff_Inputs[iDiff_Inputs] = SU2_TYPE::GetValue(Total_Sens_AoA * PI_NUMBER / 180.0);
+        break;
+      default:
+        break;
+    }
+  }
+
 
   }
   END_SU2_OMP_SAFE_GLOBAL_ACCESS

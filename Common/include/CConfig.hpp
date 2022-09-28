@@ -1147,6 +1147,10 @@ private:
   su2double uq_urlx;            /*!< \brief Under-relaxation factor */
   bool uq_permute;              /*!< \brief Permutation of eigenvectors */
 
+//pad created two variables that stores diff input relevant values 
+  unsigned short nDiff_Inputs; /*!< \brief Number of inputs that are differentiated with respect to */
+  unsigned short *Diff_Inputs; /*!< \brief List of enums defining which inputs should be defferetiated with repect to */
+
   unsigned long pastix_fact_freq;  /*!< \brief (Re-)Factorization frequency for PaStiX */
   unsigned short pastix_verb_lvl;  /*!< \brief Verbosity level for PaStiX */
   unsigned short pastix_fill_lvl;  /*!< \brief Fill level for PaStiX ILU */
@@ -2345,6 +2349,13 @@ public:
    * \param[in] val_mach - Value of the Mach number.
    */
   void SetMach(su2double val_mach) { Mach = val_mach; }
+
+//pad setting the vlue of prandtl_Lam number, takes in a su2double value and then store it in Prandtl_lam, which is already created as a su2double variable 
+  /*!
+   * \brief Set the Prandl Lam parameter.
+   * \return Value of the Prandl Lam parameter.
+   */
+  void SetPrandtl_Lam(su2double val_pl) {Prandtl_Lam = val_pl;}
 
   /*!
    * \brief Set the Reynolds number.
@@ -3970,6 +3981,12 @@ public:
    * \brief Set the value of the non-dimensional constant viscosity.
    */
   void SetMu_ConstantND(su2double mu_const) { Mu_ConstantND = mu_const; }
+
+//pad same as prandtl num, we set the mu_constant value using this function. Mu_constantND is non-dimensional. This one is not. 
+  /*!
+   * \brief Set the value of the constant viscosity.
+   */
+  void SetMu_Constant(su2double mu) {Mu_Constant = mu; }
 
   /*!
    * \brief Set the value of the non-dimensional thermal conductivity.
@@ -9196,6 +9213,19 @@ public:
    * \return Number of pseudo-time steps run for the single-zone problem
    */
   unsigned long GetnIter(void) const { return nIter; }
+
+//pad this is access function that get the diff_input information. No input arguements is needed, just call it. 
+ /*!
+   * \brief Get the list of inputs that are differentiated with respect to
+   * \return List of inputs that are differentiated with respect to
+   */
+  unsigned short* GetDiff_Inputs(void) {return Diff_Inputs;}
+
+  /*!
+   * \brief Get the number of inputs that are differentiated with respect to
+   * \return Number of inputs that are differentiated with respect to
+   */
+  unsigned short GetnDiff_Inputs(void) {return nDiff_Inputs;};
 
   /*!
    * \brief Get the restart iteration

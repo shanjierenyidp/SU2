@@ -1761,6 +1761,27 @@ enum ENUM_OBJECTIVE {
   REFERENCE_GEOMETRY = 60,      /*!< \brief Norm of displacements with respect to target geometry. */
   REFERENCE_NODE = 61,          /*!< \brief Objective function defined as the difference of a particular node respect to a reference position. */
   VOLUME_FRACTION = 62,         /*!< \brief Volume average physical density, for material-based topology optimization applications. */
+  
+  //pad adding new objective functions here  (so these are just different options for the obj input.)
+  DO_RHO=63,       /*!< \brief Density. */
+  DO_RHOU1=64,     /*!< \brief Momentum-x. */
+  DO_RHOU2=65,     /*!< \brief Momentum-y. */
+  DO_RHOU3=66,     /*!< \brief Momentum-z. */
+  DO_RHOE=67,      /*!< \brief Rho-E. */
+  DO_PRESS=68,     /*!< \brief Pressure. */
+  DO_AOA=69,       /*!< \brief Angle of attack. */
+  DO_SA=70,        /*!< \brief Spalart-Allmaras Nu. */
+  DO_K=71,         /*!< \brief k-w Kinetic energy. */
+  DO_W=72,         /*!< \brief k-w Rate of dissipation. */
+  DO_TEMP=73,      /*!< \brief Temperature. */
+  DO_UTOL=74,       /*!< \brief Elasticity displacement norm. */
+  DO_RTOL=75,       /*!< \brief Elasticity residual norm. */
+  DO_ETOL=76,       /*!< \brief Elasticity energy norm. */
+  DO_DISPX=77,        /*!< \brief Norm of the displacement vector - x component. */
+  DO_DISPY=78,       /*!< \brief Norm of the displacement vector - y component. */
+  DO_DISPZ=79,        /*!< \brief Norm of the displacement vector - z component. */
+  DO_VMS=80,       /*!< \brief Elasticity Maximum Von Mises stress. */
+  
   TOPOL_DISCRETENESS = 63,      /*!< \brief Measure of the discreteness of the current topology. */
   TOPOL_COMPLIANCE = 64,        /*!< \brief Measure of the discreteness of the current topology. */
   STRESS_PENALTY = 65,          /*!< \brief Penalty function of VM stresses above a maximum value. */
@@ -1806,6 +1827,29 @@ static const MapType<std::string, ENUM_OBJECTIVE> Objective_Map = {
   MakePair("REFERENCE_GEOMETRY", REFERENCE_GEOMETRY)
   MakePair("REFERENCE_NODE", REFERENCE_NODE)
   MakePair("VOLUME_FRACTION", VOLUME_FRACTION)
+
+//pad if you add more options , you have to make pair of its name to the incode class 
+  MakePair("VOLUME_FRACTION", VOLUME_FRACTION)
+  MakePair("DENSITY", DO_RHO)
+  MakePair("MOMENTUM-X", DO_RHOU1)
+  MakePair("MOMENTUM-Y", DO_RHOU2)
+  MakePair("MOMENTUM-Z", DO_RHOU3)
+  MakePair("RHO-E", DO_RHOE)
+  MakePair("PRESSURE", DO_PRESS)
+  MakePair("AOA", DO_AOA)
+  MakePair("SA-NU", DO_SA)
+  MakePair("K-W_KINETIC", DO_K)
+  MakePair("K-W_DISSIPATION", DO_W)
+  MakePair("TEMPERATURE", DO_TEMP)
+  MakePair("UTOL", DO_UTOL)
+  MakePair("RTOL", DO_RTOL)
+  MakePair("ETOL", DO_ETOL)
+  MakePair("DISPX", DO_DISPX)
+  MakePair("DISPY", DO_DISPY)
+  MakePair("DISPZ", DO_DISPZ)
+  MakePair("VON_MISES_STRESS", DO_VMS)
+
+
   MakePair("TOPOL_DISCRETENESS", TOPOL_DISCRETENESS)
   MakePair("TOPOL_COMPLIANCE", TOPOL_COMPLIANCE)
   MakePair("STRESS_PENALTY", STRESS_PENALTY)
@@ -2244,6 +2288,61 @@ static const MapType<std::string, ENUM_DIRECTDIFF_VAR> DirectDiff_Var_Map = {
   MakePair("STRUCTURAL_DEAD_LOAD", D_RHO_DL)
   MakePair("ELECTRIC_FIELD", D_EFIELD)
 };
+
+
+
+//pad based on the default enum, add another diffinput var. This is adding options for our diffinput input
+
+/*!
+ * \brief The differentiable input variables.
+ */
+
+enum ENUM_DIFFINPUT_VAR{
+  DI_NO_DERIVATIVE = 0,
+  DI_MACH = 1,   /*!< \brief Derivative with respect to the mach number */
+  DI_AOA = 2,		 /*!< \brief Derivative with respect to the angle of attack */
+  DI_PRESSURE = 3, /*!< \brief Derivative with respect to the freestream pressure */
+  DI_TEMPERATURE = 4,/*!< \brief Derivative with respect to the freestream temperature */
+  DI_DENSITY = 5,
+  DI_TURB2LAM = 6,
+  DI_SIDESLIP = 7,
+  DI_VISCOSITY = 8,
+  DI_REYNOLDS = 9,
+  DI_DESIGN = 10,
+  DI_YOUNG = 11,
+  DI_POISSON = 12,
+  DI_RHO = 13,
+  DI_RHO_DL = 14,
+  DI_EFIELD = 15,
+  DI_PRANDTL_LAM = 16, //newlly added.
+  DI_MU_CONSTANT = 17 //newlly added.
+};
+
+
+// again, you have to make pair that map the name to the incode class. 
+static const MapType<std::string, ENUM_DIFFINPUT_VAR> DiffInput_Var_Map = {
+  MakePair("NONE", DI_NO_DERIVATIVE)
+  MakePair("MACH", DI_MACH)
+  MakePair("AOA", DI_AOA)
+  MakePair("PRESSURE", DI_PRESSURE)
+  MakePair("TEMPERATURE", DI_TEMPERATURE)
+  MakePair("DENSITY", DI_DENSITY)
+  MakePair("TURB2LAM", DI_TURB2LAM)
+  MakePair("SIDESLIP", DI_SIDESLIP)
+  MakePair("VISCOSITY", DI_VISCOSITY)
+  MakePair("REYNOLDS", DI_REYNOLDS)
+  MakePair("DESIGN_VARIABLES", DI_DESIGN)
+  MakePair("YOUNG_MODULUS", DI_YOUNG)
+  MakePair("POISSON_RATIO", DI_POISSON)
+  MakePair("STRUCTURAL_DENSITY", DI_RHO)
+  MakePair("STRUCTURAL_DEADI_LOAD", DI_RHO_DL)
+  MakePair("ELECTRIC_FIELD", DI_EFIELD)
+  MakePair("PRANDTL_LAM", DI_PRANDTL_LAM)
+  MakePair("MU_CONSTANT", DI_MU_CONSTANT)
+
+};
+
+
 
 
 enum class RECORDING {

@@ -336,6 +336,22 @@ CEulerSolver::CEulerSolver(CGeometry *geometry, CConfig *config,
    *    check at the bottom to make sure we consider the "final" values). ---*/
   if((nDim > MAXNDIM) || (nPrimVar > MAXNVAR) || (nSecondaryVar > MAXNVAR))
     SU2_MPI::Error("Oops! The CEulerSolver static array sizes are not large enough.",CURRENT_FUNCTION);
+
+//pad 
+  /*--- Initialize differentiable inputs arrays ---*/
+
+  Diff_Inputs_Vars.reserve(config->GetnDiff_Inputs());
+  Diff_Inputs_Vars.assign(config->GetnDiff_Inputs(), 1.0);  // TODO Maybe assign isnt necessary here because array might be used sparsely
+
+  // TODO Are both reserve and assigned necessary?
+  Total_Sens_Diff_Inputs.reserve(config->GetnDiff_Inputs());
+  Total_Sens_Diff_Inputs.assign(config->GetnDiff_Inputs(), 1.0);
+
+  // Store iMesh for re-running SetNondimensionalization after registering variables
+  iMesh_Store = iMesh;
+
+
+
 }
 
 CEulerSolver::~CEulerSolver(void) {
@@ -4209,6 +4225,16 @@ void CEulerSolver::UpdateCustomBoundaryConditions(CGeometry **geometry_container
     }
   }
 }
+
+//pad 
+void CEulerSolver::RegisterVariables(CGeometry *geometry, CConfig *config, bool reset) {
+
+}
+
+void CEulerSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config){
+
+}
+
 
 void CEulerSolver::Evaluate_ObjFunc(const CConfig *config, CSolver**) {
 

@@ -481,6 +481,17 @@ public:
    */
   unsigned long GetVertexGlobalIndex(unsigned short iMarker, unsigned long iVertex) const;
 
+//pad  we added the getpressure function on the marker 
+  /*!
+   * \brief Get the pressure at a vertex on a specified marker.
+   * \param[in] iMarker - Marker identifier.
+   * \param[in] iVertex - Vertex identifier.
+   * \return vertex pressure.
+   */
+  passivedouble GetVertexPressure(unsigned short iMarker, unsigned short iVertex);
+
+
+
   /*!
    * \brief Get undeformed coordinates from the mesh solver.
    * \param[in] iMarker - Marker identifier.

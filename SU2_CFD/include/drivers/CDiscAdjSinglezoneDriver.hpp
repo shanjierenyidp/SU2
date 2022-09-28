@@ -102,6 +102,22 @@ public:
    */
   void DirectRun(RECORDING kind_recording);
 
+  //pad  we addedd the sensitivity, get weight obj in side the disadjsinglezonedriver
+  vector<passivedouble> GetTotal_Sens_Diff_Inputs();
+
+  // TODO Remove after debugging
+  passivedouble Get_ObjFunc();
+
+  /*!
+   * \brief Get a weight of the objective function.
+   */
+  su2double GetWeight_ObjFunc(unsigned short val_obj);
+
+  /*!
+   * \brief Set a weight for the objective function.
+   */
+  void SetWeight_ObjFunc(unsigned short val_obj, su2double val);
+
   /*!
    * \brief Set the objective function.
    */

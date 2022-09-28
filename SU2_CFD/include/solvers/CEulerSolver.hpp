@@ -280,6 +280,12 @@ protected:
    */
   void SetReferenceValues(const CConfig& config) final;
 
+//pad  add diffinput and imeshstore in the eular solver 
+  vector<su2double> Diff_Inputs_Vars; /*!< \brief Differentiation input variables to be registered with AD. */
+  unsigned short iMesh_Store;
+
+
+
 public:
   CEulerSolver() = delete;
 
@@ -1532,6 +1538,13 @@ public:
                        unsigned short valSpan) final {
     NuOut[inMarkerTP][valSpan] = value;
   }
+
+//pad add register and extract inside the eular solver.  
+void RegisterVariables(CGeometry *geometry, CConfig *config, bool reset);
+
+void ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config);
+
+
 
   /*!
    * \brief Print verification error to screen.

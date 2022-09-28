@@ -143,6 +143,11 @@ protected:
   bool rotate_periodic;    /*!< \brief Flag that controls whether the periodic solution needs to be rotated for the solver. */
   bool implicit_periodic;  /*!< \brief Flag that controls whether the implicit system should be treated by the periodic BC comms. */
 
+
+  //pad  added total sensitivity attribute to CDriver class.
+
+  vector<passivedouble> Total_Sens_Diff_Inputs;    /*!< \brief Total sensitivities to the differentiation inputs. */
+
   bool dynamic_grid;       /*!< \brief Flag that determines whether the grid is dynamic (moving or deforming + grid velocities). */
 
   vector<su2activematrix> VertexTraction;          /*- Temporary, this will be moved to a new postprocessing structure once in place -*/
@@ -4216,6 +4221,9 @@ public:
    * \param[in] val_implicit_periodic - Flag controlling solution rotation for periodic BCs.
    */
   inline void SetRotatePeriodic(bool val_rotate_periodic) { rotate_periodic = val_rotate_periodic; }
+
+  //pad here we declare and define the get sensitivity function 
+  vector<passivedouble> GetTotal_Sens_Diff_Inputs(void) {return Total_Sens_Diff_Inputs;};
 
   /*!
    * \brief Retrieve the solver name for output purposes.

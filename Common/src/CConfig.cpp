@@ -835,6 +835,10 @@ void CConfig::SetPointersNull(void) {
 
   Config_Filenames = nullptr;
 
+  //pad void CConfig::SetPointersNull(void) is moved inside this file and we added the initialization of diff_input pointer here 
+  Diff_Inputs = nullptr;
+
+
   /*--- Marker Pointers ---*/
 
   Marker_Euler                = nullptr;    Marker_FarField             = nullptr;    Marker_Custom              = nullptr;
@@ -2843,6 +2847,10 @@ void CConfig::SetConfig_Options() {
 
   /* DESCRIPTION: Permuting eigenvectors for UQ analysis */
   addBoolOption("UQ_PERMUTE", uq_permute, false);
+
+  //pad this will enable we have diff_input in the config file.  
+  /* DESCRIPTION: List of variables to differentiate with respect to */
+	addEnumListOption("DIFF_INPUTS", nDiff_Inputs, Diff_Inputs, DiffInput_Var_Map);
 
   /* DESCRIPTION: Number of calls to 'Build' that trigger re-factorization (0 means only once). */
   addUnsignedLongOption("PASTIX_FACTORIZATION_FREQUENCY", pastix_fact_freq, 1);
@@ -7949,6 +7957,11 @@ CConfig::~CConfig() {
 
   delete [] nBlades;
   delete [] FreeStreamTurboNormal;
+  
+  //pad
+
+  // if (Diff_Inputs != nullptr) delete[] Diff_Inputs;  this is old version 
+  delete[] Diff_Inputs;  //this should be the new version. 
 }
 
 string CConfig::GetFilename(string filename, string ext, int timeIter) const {

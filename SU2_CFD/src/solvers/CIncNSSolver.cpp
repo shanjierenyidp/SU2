@@ -862,3 +862,67 @@ void CIncNSSolver::SetTau_Wall_WF(CGeometry *geometry, CSolver **solver_containe
   }
 
 }
+
+
+void CIncNSSolver::RegisterVariables(CGeometry *geometry, CConfig *config, bool reset) {
+  // TODO Also run CIncEulerSolver's register variables?
+
+  unsigned short iDiff_Inputs;
+  bool reset_nondimensionalization = false;
+
+  for (iDiff_Inputs = 0; iDiff_Inputs < config->GetnDiff_Inputs(); iDiff_Inputs++){
+    switch (config->GetDiff_Inputs()[iDiff_Inputs]) {
+      case DI_MU_CONSTANT:
+        Diff_Inputs_Vars[iDiff_Inputs] = config->GetMu_Constant();
+        if (!reset) {
+          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs]);
+          config->SetMu_Constant(Diff_Inputs_Vars[iDiff_Inputs]);
+          reset_nondimensionalization = true;
+        }
+        break;
+      case DI_PRANDTL_LAM:
+        Diff_Inputs_Vars[iDiff_Inputs] = config->GetPrandtl_Lam();
+        if (!reset) {
+          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs]);
+        }
+        config->SetPrandtl_Lam(Diff_Inputs_Vars[iDiff_Inputs]);
+        reset_nondimensionalization = true;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if (reset_nondimensionalization) {
+    delete FluidModel[0];
+    FluidModel[0] = NULL;
+    SetNondimensionalization(config, iMesh_Store);
+  }
+}
+
+void CIncNSSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config) {
+  // TODO Account for non scalar cases
+
+  unsigned short iDiff_Inputs;
+  passivedouble Local_Sens;
+
+  for (iDiff_Inputs = 0; iDiff_Inputs < config->GetnDiff_Inputs(); iDiff_Inputs++){
+    switch (config->GetDiff_Inputs()[iDiff_Inputs]) {
+      case DI_MU_CONSTANT:
+      case DI_PRANDTL_LAM:
+        Local_Sens = SU2_TYPE::GetDerivative(Diff_Inputs_Vars[iDiff_Inputs]);
+        break;
+
+      default:
+        continue;  // If nothing was done, skip assignment below
+    }
+#ifdef HAVE_MPI
+    // TODO Should it be MPI Allreduce/MPI_SUM here?
+    SU2_MPI::Allreduce(&Local_Sens,  &Total_Sens_Diff_Inputs[iDiff_Inputs],  1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#else
+    Total_Sens_Diff_Inputs[iDiff_Inputs] = Local_Sens;
+#endif
+  }
+
+}

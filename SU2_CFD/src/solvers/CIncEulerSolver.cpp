@@ -227,6 +227,25 @@ CIncEulerSolver::CIncEulerSolver(CGeometry *geometry, CConfig *config, unsigned 
    *    check at the bottom to make sure we consider the "final" values). ---*/
   if((nDim > MAXNDIM) || (nPrimVar > MAXNVAR))
     SU2_MPI::Error("Oops! The CIncEulerSolver static array sizes are not large enough.", CURRENT_FUNCTION);
+
+//pad 
+  /*--- Initialize differentiable inputs arrays ---*/
+
+  Diff_Inputs_Vars.reserve(config->GetnDiff_Inputs());
+  Diff_Inputs_Vars.assign(config->GetnDiff_Inputs(), 1.0);  // TODO Maybe assign isnt necessary here because array might be used sparsely
+
+  // TODO Are both reserve and assigned necessary?
+  Total_Sens_Diff_Inputs.reserve(config->GetnDiff_Inputs());
+  Total_Sens_Diff_Inputs.assign(config->GetnDiff_Inputs(), 1.0);
+
+  // Store iMesh for re-running SetNondimensionalization after registering variables
+  iMesh_Store = iMesh;
+
+
+
+
+
+
 }
 
 CIncEulerSolver::~CIncEulerSolver(void) {
@@ -3147,6 +3166,16 @@ void CIncEulerSolver::SetFreeStream_Solution(const CConfig *config){
   END_SU2_OMP_FOR
 
 }
+
+// pad
+void CIncEulerSolver::RegisterVariables(CGeometry *geometry, CConfig *config, bool reset) {
+
+}
+
+void CIncEulerSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config) {
+
+}
+
 
 unsigned long CIncEulerSolver::RegisterSolutionExtra(bool input, const CConfig* config) {
   if (config->GetKind_Streamwise_Periodic() == ENUM_STREAMWISE_PERIODIC::MASSFLOW) {
