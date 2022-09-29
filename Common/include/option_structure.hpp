@@ -2315,7 +2315,8 @@ enum ENUM_DIFFINPUT_VAR{
   DI_RHO_DL = 14,
   DI_EFIELD = 15,
   DI_PRANDTL_LAM = 16, //newlly added.
-  DI_MU_CONSTANT = 17 //newlly added.
+  DI_MU_CONSTANT = 17, //newlly added.
+  DI_VELOCITY_FREESTREAM = 18 //newly added.
 };
 
 
@@ -2339,7 +2340,7 @@ static const MapType<std::string, ENUM_DIFFINPUT_VAR> DiffInput_Var_Map = {
   MakePair("ELECTRIC_FIELD", DI_EFIELD)
   MakePair("PRANDTL_LAM", DI_PRANDTL_LAM)
   MakePair("MU_CONSTANT", DI_MU_CONSTANT)
-
+  MakePair("VELOCITY_FREESTREAM", DI_VELOCITY_FREESTREAM)
 };
 
 

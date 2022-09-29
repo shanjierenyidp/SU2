@@ -66,6 +66,17 @@ CNSSolver::CNSSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh)
       break;
   }
 
+  //pad this is not activated cuz this constructer is only doing what's is not in the parent eular solver. 
+  // /*--- Initialize differentiable inputs arrays ---*/
+
+  // Diff_Inputs_Vars.reserve(config->GetnDiff_Inputs());
+  // Diff_Inputs_Vars.resize(config->GetnDiff_Inputs());
+
+  // Total_Sens_Diff_Inputs.reserve(config->GetnDiff_Inputs());
+  // Total_Sens_Diff_Inputs.resize(config->GetnDiff_Inputs());
+
+  // // Store iMesh for re-running SetNondimensionalization after registering variables
+  // iMesh_Store = iMesh;
 }
 
 void CNSSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iMesh,
@@ -1059,29 +1070,45 @@ void CNSSolver::SetTau_Wall_WF(CGeometry *geometry, CSolver **solver_container, 
 
 // pad 
 void CNSSolver::RegisterVariables(CGeometry *geometry, CConfig *config, bool reset) {
-  // TODO Also run CIncEulerSolver's register variables?
-
+  // TODO Also run CEulerSolver's register variables?
   unsigned short iDiff_Inputs;
   bool reset_nondimensionalization = false;
 
   for (iDiff_Inputs = 0; iDiff_Inputs < config->GetnDiff_Inputs(); iDiff_Inputs++){
     switch (config->GetDiff_Inputs()[iDiff_Inputs]) {
+
+//      case DI_REYNOLDS:
+//        // TODO Have to redo something
+//        Diff_Inputs_Vars[iDiff_Inputs].resize(1);
+//        Diff_Inputs_Vars[iDiff_Inputs][0] = config->GetReynolds();
+//        if (!reset) {
+//          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs][0]);
+//        }
+//        config->SetReynolds(Diff_Inputs_Vars[iDiff_Inputs][0]);
+//        reset_nondimensionalization = true;
+//        break;
+
       case DI_MU_CONSTANT:
-        Diff_Inputs_Vars[iDiff_Inputs] = config->GetMu_Constant();
+        Diff_Inputs_Vars[iDiff_Inputs].resize(1);
+        Diff_Inputs_Vars[iDiff_Inputs][0] = config->GetMu_Constant();
         if (!reset) {
-          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs]);
-          config->SetMu_Constant(Diff_Inputs_Vars[iDiff_Inputs]);
-          reset_nondimensionalization = true;
+          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs][0]);
         }
-        break;
-      case DI_PRANDTL_LAM:
-        Diff_Inputs_Vars[iDiff_Inputs] = config->GetPrandtl_Lam();
-        if (!reset) {
-          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs]);
-        }
-        config->SetPrandtl_Lam(Diff_Inputs_Vars[iDiff_Inputs]);
+        config->SetMu_Constant(Diff_Inputs_Vars[iDiff_Inputs][0]);
         reset_nondimensionalization = true;
         break;
+      case DI_PRANDTL_LAM:
+        Diff_Inputs_Vars[iDiff_Inputs].resize(1);
+        Diff_Inputs_Vars[iDiff_Inputs][0] = config->GetPrandtl_Lam();
+        if (!reset) {
+          AD::RegisterInput(Diff_Inputs_Vars[iDiff_Inputs][0]);
+        }
+        config->SetPrandtl_Lam(Diff_Inputs_Vars[iDiff_Inputs][0]);
+        reset_nondimensionalization = true;
+        break;
+
+        // TODO For vector cases dont forget to reserve before pushing back values
+
 
       default:
         break;
@@ -1102,21 +1129,31 @@ void CNSSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config) {
   passivedouble Local_Sens;
 
   for (iDiff_Inputs = 0; iDiff_Inputs < config->GetnDiff_Inputs(); iDiff_Inputs++){
+    unsigned short iVec, nVec;
+
     switch (config->GetDiff_Inputs()[iDiff_Inputs]) {
+//      case DI_REYNOLDS:
       case DI_MU_CONSTANT:
       case DI_PRANDTL_LAM:
-        Local_Sens = SU2_TYPE::GetDerivative(Diff_Inputs_Vars[iDiff_Inputs]);
+        nVec = Diff_Inputs_Vars[iDiff_Inputs].size();
+        Total_Sens_Diff_Inputs[iDiff_Inputs].reserve(nVec);
+        Total_Sens_Diff_Inputs[iDiff_Inputs].resize(nVec);
+
+        for (iVec = 0; iVec < nVec; iVec++) {
+          Local_Sens = SU2_TYPE::GetDerivative(Diff_Inputs_Vars[iDiff_Inputs][iVec]);
+
+
+#ifdef HAVE_MPI
+    // TODO Should it be MPI Allreduce/MPI_SUM here?
+    SU2_MPI::Allreduce(&Local_Sens,  &Total_Sens_Diff_Inputs[iDiff_Inputs][iVec],  1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#else
+    Total_Sens_Diff_Inputs[iDiff_Inputs][iVec] = Local_Sens;
+#endif
+        }
         break;
 
       default:
-        continue;  // If nothing was done, skip assignment below
+        break;
     }
-#ifdef HAVE_MPI
-    // TODO Should it be MPI Allreduce/MPI_SUM here?
-    SU2_MPI::Allreduce(&Local_Sens,  &Total_Sens_Diff_Inputs[iDiff_Inputs],  1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-#else
-    Total_Sens_Diff_Inputs[iDiff_Inputs] = Local_Sens;
-#endif
   }
-
 }

@@ -266,4 +266,10 @@ public:
     return false;
   }
 
+
+  //pad adding get diff inputs and set diff input 
+  vector<su2double> GetDiff_Inputs_Vars(unsigned short index);
+
+  void SetDiff_Inputs_Vars(vector<passivedouble> val, unsigned short index);
+
 };

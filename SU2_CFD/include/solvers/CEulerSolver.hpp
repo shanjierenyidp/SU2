@@ -281,7 +281,7 @@ protected:
   void SetReferenceValues(const CConfig& config) final;
 
 //pad  add diffinput and imeshstore in the eular solver 
-  vector<su2double> Diff_Inputs_Vars; /*!< \brief Differentiation input variables to be registered with AD. */
+  // vector<su2double> Diff_Inputs_Vars; /*!< \brief Differentiation input variables to be registered with AD. */
   unsigned short iMesh_Store;
 
 
@@ -1544,6 +1544,10 @@ void RegisterVariables(CGeometry *geometry, CConfig *config, bool reset);
 
 void ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config);
 
+
+vector<su2double> GetDiff_Inputs_Vars(unsigned short index);
+
+void SetDiff_Inputs_Vars(vector<passivedouble> val, unsigned short index);
 
 
   /*!

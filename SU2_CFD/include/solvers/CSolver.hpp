@@ -146,8 +146,10 @@ protected:
 
   //pad  added total sensitivity attribute to CDriver class.
 
-  vector<passivedouble> Total_Sens_Diff_Inputs;    /*!< \brief Total sensitivities to the differentiation inputs. */
+  vector< vector<passivedouble> > Total_Sens_Diff_Inputs;    /*!< \brief Total sensitivities to the differentiation inputs. */
+  vector< vector<su2double> > Diff_Inputs_Vars;    /*!< \brief Differentiation input variables to be registered with AD. */
 
+  
   bool dynamic_grid;       /*!< \brief Flag that determines whether the grid is dynamic (moving or deforming + grid velocities). */
 
   vector<su2activematrix> VertexTraction;          /*- Temporary, this will be moved to a new postprocessing structure once in place -*/
@@ -4223,8 +4225,12 @@ public:
   inline void SetRotatePeriodic(bool val_rotate_periodic) { rotate_periodic = val_rotate_periodic; }
 
   //pad here we declare and define the get sensitivity function 
-  vector<passivedouble> GetTotal_Sens_Diff_Inputs(void) {return Total_Sens_Diff_Inputs;};
+  vector< vector<passivedouble> > GetTotal_Sens_Diff_Inputs(void) {return Total_Sens_Diff_Inputs;};
 
+  virtual vector<su2double> GetDiff_Inputs_Vars(unsigned short index) { };
+
+  virtual void SetDiff_Inputs_Vars(vector<passivedouble> val, unsigned short index) { };
+  
   /*!
    * \brief Retrieve the solver name for output purposes.
    * \param[out] val_solvername - Name of the solver.

@@ -231,13 +231,14 @@ CIncEulerSolver::CIncEulerSolver(CGeometry *geometry, CConfig *config, unsigned 
 //pad 
   /*--- Initialize differentiable inputs arrays ---*/
 
-  Diff_Inputs_Vars.reserve(config->GetnDiff_Inputs());
-  Diff_Inputs_Vars.assign(config->GetnDiff_Inputs(), 1.0);  // TODO Maybe assign isnt necessary here because array might be used sparsely
+
 
   // TODO Are both reserve and assigned necessary?
   Total_Sens_Diff_Inputs.reserve(config->GetnDiff_Inputs());
-  Total_Sens_Diff_Inputs.assign(config->GetnDiff_Inputs(), 1.0);
+  Total_Sens_Diff_Inputs.resize(config->GetnDiff_Inputs());
 
+  Diff_Inputs_Vars.reserve(config->GetnDiff_Inputs());
+  Diff_Inputs_Vars.resize(config->GetnDiff_Inputs());
   // Store iMesh for re-running SetNondimensionalization after registering variables
   iMesh_Store = iMesh;
 
@@ -3167,13 +3168,28 @@ void CIncEulerSolver::SetFreeStream_Solution(const CConfig *config){
 
 }
 
-// pad
+// pad added registervariables and extract adjoints, currently it is emtpy 
 void CIncEulerSolver::RegisterVariables(CGeometry *geometry, CConfig *config, bool reset) {
 
 }
 
 void CIncEulerSolver::ExtractAdjoint_Variables(CGeometry *geometry, CConfig *config) {
 
+}
+
+vector<su2double> CIncEulerSolver::GetDiff_Inputs_Vars(unsigned short index) {
+  return Diff_Inputs_Vars[index];
+}
+
+void CIncEulerSolver::SetDiff_Inputs_Vars(vector<passivedouble> val, unsigned short index) {
+  unsigned short iVec, nVec;
+
+  nVec = val.size();
+  Diff_Inputs_Vars[index].reserve(nVec);
+  Diff_Inputs_Vars[index].resize(nVec);
+  for (iVec = 0; iVec < nVec; iVec++) {
+    Diff_Inputs_Vars[index][iVec] = val[iVec];
+  }
 }
 
 

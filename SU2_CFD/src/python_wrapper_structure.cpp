@@ -28,7 +28,7 @@
 
 #include "../include/drivers/CDriver.hpp"
 #include "../include/drivers/CSinglezoneDriver.hpp"
-// pad include the file where CDiscAdjSinglezoneDriver is defined 
+//pad include the file where CDiscAdjSinglezoneDriver is defined 
 #include "../include/drivers/CDiscAdjSinglezoneDriver.hpp"
 #include "../../Common/include/toolboxes/geometry_toolbox.hpp"
 
@@ -168,7 +168,7 @@ passivedouble CDriver::Get_LiftCoeff() const {
   return SU2_TYPE::GetValue(CLift);
 }
 
-// pad  use python to get vertex pressure, slightly different from previous version su2
+//pad  use python to get vertex pressure, slightly different from previous version su2
 passivedouble CDriver::GetVertexPressure(unsigned short iMarker, unsigned short iVertex) {
 
   unsigned long iPoint;
@@ -909,13 +909,22 @@ vector<passivedouble> CDriver::GetFlowLoad(unsigned short iMarker, unsigned long
 
 
 
-// pad 
-vector<passivedouble> CDiscAdjSinglezoneDriver::GetTotal_Sens_Diff_Inputs() {
+//pad 
+vector<passivedouble> CDiscAdjSinglezoneDriver::GetTotal_Sens_Diff_Inputs(unsigned short index) {
   // TODO Add check if Sensitivity hasnt been calculated yet?
   // TODO Which solver to use here?
 
-  return solver[ADJFLOW_SOL]->GetTotal_Sens_Diff_Inputs();
+  return solver[ADJFLOW_SOL]->GetTotal_Sens_Diff_Inputs()[index];
 }
+
+unsigned short CDiscAdjSinglezoneDriver::GetnDiff_Inputs() {
+  return config->GetnDiff_Inputs();
+}
+
+void CDiscAdjSinglezoneDriver::SetDiff_Inputs_Vars(vector<passivedouble> val, unsigned short index) {
+  solver[ADJFLOW_SOL]->SetDiff_Inputs_Vars(val, index);
+}
+
 
 // TODO Remove after debugging
 passivedouble CDiscAdjSinglezoneDriver::Get_ObjFunc() {
